@@ -1,0 +1,381 @@
+---
+title: Title metadata
+author:  author
+date: "`r Sys.Date()`"
+
+
+always_allow_html: yes
+output:
+  html_document:
+    number_sections: yes
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+    toc_depth: 3
+    fig_crop: no
+    template: "latex/ETH-IVT_modified/Template.tex"
+vignette: |
+  %\VignetteIndexEntry{Codebook} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+params:
+  datasets:
+    value:
+      participants:
+        file_location: /data/mobis/MOBIS_Covid/tracking/participants.rda
+        Title: x
+        Contents: >
+          This is the description of the file.
+          New lines will be compressed into spaces. To have new lines shown,
+          use \| instead of \> above. A newline is needed before the next row (in this case title)
+        Data collection: x
+        Unit of analysis: x
+        File structure: x
+        Variable Settings:
+          hh_postcode: [data_type]
+          p_occup_postcode: [data_type]
+          hh_yearlydist_car: [data_type, nice_summary, show_histogram]
+          day_*: [data_type]
+      legs:
+        file_location: /data/mobis/MOBIS_Covid/tracking/legs.rda
+        Title: legs dataset
+        Variable Settings:
+          length: [data_type]
+          duration: [data_type]
+
+---
+
+
+# Document description
+
+## Title
+
+  MOBIS-Covid19
+
+## Creator
+
+Joe Molloy (IVT, ETH Zurich)
+
+## Subject
+
+Codebook, travel diary, online surveys, GPS tracking, pandemic mobility tracking
+
+## Description
+
+This document contains a comprehensive codebook for the multiple surveys collated as part of the MOBIS-Covid19 project
+
+## Publisher
+
+Institute for Transport Planning and Systems (IVT), ETH Zurich
+
+## Contributor
+
+Thomas Schatzmann (IVT, ETH Zurich)
+Kay W. Axhausen (IVT, ETH Zurich)
+
+## Date
+
+2021-05-18
+
+## Type
+
+Codebook, surveydata
+
+## Format
+
+Portable document format (pdf), Rdata (.rda)
+
+## Source
+
+[https://www.ivt.ethz.ch/en/vpl/travel-research-data.html](https://www.ivt.ethz.ch/en/vpl/travel-research-data.html)
+
+## Language
+
+English
+
+## Relation
+
+https://www.ivt.ethz.ch
+
+[https://ivtmobis.ethz.ch/mobis/covid19/en/](https://ivtmobis.ethz.ch/mobis/covid19/en/)
+
+Details on the survey methods, Catch-my-Day app and results can be found in:
+
+  Molloy, J. (2021): \textit{Undertaking mobility field experiments using GPS tracking}, PhD Thesis, IVT, ETH Zurich, Zurich.
+
+## Coverage
+
+Switzerland, September 2019 - May 2021 (Ongoing)
+
+## Rights
+
+Institute for Transport Planning and Systems (IVT), ETH Zurich
+
+## Version responsibility
+
+Joseph Molloy (IVT, ETH Zurich)
+
+
+<div style="page-break-after: always; visibility: hidden">
+  \clearpage
+</div>
+
+
+
+# Study description
+
+## Title
+
+MOBIS-Covid19
+
+## Creator
+
+Joseph Molloy (IVT, ETH Zurich)
+
+## Subject
+
+Codebook, travel diary, online surveys, GPS tracking, pandemic mobility tracking
+
+## Description
+
+The MOBIS-Covid19 survey is an effort to track the changes in daily mobility behaviour during the pandemic using the GPS tracking app, Catch-my-Day, based on the (www.motion-tag.com)[MotionTag] platform. It is based off the MOBIS study, using the same technology, which exposed participants to a mobility pricing scheme and monitored thier response to it.
+
+The participants for the study were invited from the pool of 3680 participants who completed the MOBIS study. From late 2020 onwards, the panel was continually replenished through a collaboration with the market research firm, Link.
+
+## Publisher
+
+Institute for Transport Planning and Systems (IVT), ETH Zurich
+
+## Contributor
+
+Thomas Schatzmann (IVT, ETH Zurich)
+
+Christopher Tchervenkov (IVT, ETH Zurich)
+
+Beaumont Shoeman (WWZ, Uni Basel)
+
+Beat Hintermann (WWZ, Uni Basel)
+
+Kay W. Axhausen (IVT, ETH Zurich)
+
+## Date
+
+2021-05-18
+
+## Type
+
+Codebook, surveydata
+
+## Format
+
+Portable document format (pdf), RData (.rda)
+
+## Source
+
+https://www.ivt.ethz.ch/en/vpl/travel-research-data.html
+
+## Language
+
+English, German, French
+
+## Relation
+
+https://www.ivt.ethz.ch
+
+[https://ivtmobis.ethz.ch/mobis/covid19/en/](https://ivtmobis.ethz.ch/mobis/covid19/en/)
+
+Details on the survey methods, Catch-my-Day app and results can be found in:
+
+  Molloy, J. (2021): \textit{Undertaking mobility field experiments using GPS tracking}, PhD Thesis, IVT, ETH Zurich, Zurich.
+
+## Coverage
+
+Switzerland, January 2015 - April 2016
+
+## Rights
+
+Institute for Transport Planning and Systems (IVT), ETH Zurich
+
+## Other identifications, funding and acknowledgements
+
+The authors gratefully thank to the ASTRA, UVEK and SBB for thier support of the project. We also give thanks to David Zani and Qinggang Gao, former research assistants at the IVT, for their outstanding contributions to the project.
+
+## Unit of analysis
+
+Individuals, trip-legs and activities
+
+<div style="page-break-after: always; visibility: hidden">
+  \clearpage
+</div>
+
+
+
+
+
+<!-- Ignore everything below here -->
+
+```{r libs, echo=FALSE, results='hide', message=FALSE, cache=FALSE}
+
+
+list.of.packages <- c("pander","tidyr","broom")
+
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+lapply(list.of.packages, require, character.only = TRUE)
+
+knitr::opts_chunk$set(echo = FALSE, cache = FALSE)
+```
+
+
+```{r base, echo=FALSE, results='hide', message=F}
+
+pander::panderOptions("knitr.auto.asis", FALSE)
+pander::panderOptions("table.continues", NULL)
+pander::panderOptions("table.alignment.default", "right")
+
+show_dims <- function(x) {
+  n <- nrow(x)
+  c <- ncol(x)
+  paste("Number of cases: ", n) %>% fact
+  cat('\n')
+  paste("Variables per record: ", c) %>% fact
+}
+
+summarize_labels <- function(x, name) {
+  try({
+    labels <- attr(as.factor(x), "labels")
+    
+    formatted_labels <- mapply(function(name, value) paste0(name, " = ", value), labels, names(labels))
+    paste0("Labels: ", paste(formatted_labels, collapse = ", ")) %>% fact
+  })
+}
+
+knit_print.data.frame <- function(x, options, ...) {
+  x %>% knitr::kable %>% knitr::knit_print(options, ...)
+}
+
+varname <- function(x, name) {
+  label_x <- Hmisc::label(x)
+  cat(pander::pandoc.header(paste0("`", name, "`"), 2))
+  cat('\n')
+  if (!is.na(label_x)) cat(label_x)
+  cat('\n\n')
+}
+
+fact <- function(x) {
+  paste0(x, ". ", '\n', collapse = '\n') %>% cat()
+}
+
+data_type <- function(x, name) {
+  format <- stringr::str_to_title(setdiff(unique(c(class(x), mode(x))), c('labelled', 'haven_labelled', 'vctrs_vctr' )))[1]
+  paste0("Format = ", paste(format, collapse = ", ")) %>% fact
+}
+
+nice_summary <- function(x, name) x %>% summary %>% pander::pander_return()
+
+count_levels_horizontal <- function(x, name) {
+  m <- x %>% haven::as_factor %>% 
+    summary(maxsum = 26)  %>% 
+    broom::tidy() %>% 
+    tidyr::pivot_wider(names_from = names, values_from=x)
+  
+  rownames(m)<-"Count"
+#   vals <-
+#     colnames(m) %>%
+#     lapply(function(name) unname(l[names(l) == name])) %>%
+#     lapply(paste, collapse = ", ") %>%
+#     unlist %>%
+#     as.matrix %>%
+#     t
+  
+#  rbind(vals, m) %>% "rownames<-"(c("Values", "Count")) %>% pander::pander()
+  m %>% pander::pander()
+}
+
+count_levels_vertical <- function(x, name) {
+  m <- x %>% as.factor %>% summary(maxsum = 26) %>% broom::tidy()
+  colnames(m) <- c('Value', 'Count')
+#   vals <-
+#     colnames(m) %>%
+#     lapply(function(name) unname(l[names(l) == name])) %>%
+#     lapply(paste, collapse = ", ") %>%
+#     unlist %>%
+#     as.matrix %>%
+#     t
+  
+#  rbind(vals, m) %>% "rownames<-"(c("Values", "Count")) %>% pander::pander()
+  m %>% pander::pander()
+}
+
+show_histogram <- function(x, name) {
+  cat('\n\n')
+  hist(x, main = paste("Histogram of", name), xlab = name, probability = TRUE)
+  cat('\n\n')
+}
+
+detect_standard_functions <- function(c) {
+  col_type = typeof(c)
+  is_date_or_time <- length(intersect(c('Date', 'POSIXct', 'POSIXt'), class(c))) > 0
+  funs <- c(data_type)
+  
+  funs <- if (col_type == 'character' && length(unique(c)) <= 5) {
+    funs <- c(funs) 
+  } else if  (col_type == 'character' && length(unique(c)) > 5 && length(unique(c)) < 26) {
+    funs <- c(funs) 
+ # } else if ('integer' == typeof(c)) { # integer
+ #   funs <- c(funs)
+  }  else if (!is_date_or_time && (col_type == 'numeric' || col_type == 'double')) {
+    funs <- c(funs, show_histogram)
+  }# else {
+  #  funs <- c(funs, function(x, name){paste(col_type )})
+  #}
+  
+  if (!is.null(attr(c, 'labels')) && 
+      length(attr(c, 'labels') > 0)) {
+    funs <- c(summarize_labels, funs)
+  }
+  
+  as.list(funs)
+}
+
+describe_var <- function(data, name, ...) {
+  column <- data[[name]]
+  
+  funs <- if (length(list(...)) == 0) {
+    detect_standard_functions(column)
+  } else {
+    list(...)
+  }
+
+  output <- function(f, x, name) {f(x, name)}
+  
+  cat(ifelse(knitr::is_latex_output(), "\n\\minipage{\\textwidth}\n", ''))
+  cat(output(varname, column, name))
+  cat(unlist(lapply(funs, output, x = column, name = name)), sep=' \n')
+  cat('\n\n')
+  cat(ifelse(knitr::is_latex_output(), "\\endminipage\n", ''))
+  
+}
+```
+
+```{r, echo=FALSE, message=F, warning=F, results='asis'}
+
+files <- names(params$datasets) 
+
+```
+
+```{r, echo=FALSE, message=F, warning=F, results='asis'}
+
+src <- lapply(files, function(f) {
+  ## first build file info text:
+  file_description = knitr::knit_expand('archive_dataset_section_template.Rmd')
+  ## then create describe_var for all variables 
+  #file_variables = build_variables_rmarkdown(f)
+  ## paste them together as text
+  paste(file_description, collapse = '\n')
+  
+})
+res = knitr::knit_child(text = unlist(src), quiet=T, options = list(params=params))
+
+cat(res, sep = '\n')
+
+```
+

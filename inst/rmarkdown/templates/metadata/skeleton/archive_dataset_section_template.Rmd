@@ -1,0 +1,51 @@
+
+```{r, echo=F, results='asis'}
+
+ff <- params$datasets[["{{f}}"]]
+
+
+load(ff$file_location)
+ff$dataset = get("{{f}}")
+```
+
+# {{f}}: File description
+
+
+```{r file-description-{{f}}, echo=F, warning=F, message=FALSE, results='asis'}
+  sections = list('Title', 'Contents', 'Data collection', 'Unit of analysis', 'File Structure')
+  invisible(lapply(sections, function(s) {
+    if (!is.null(ff[[s]])) {
+      cat(paste0(s, ': ', ff[[s]], '\n\n' ))
+    } else {
+      warning(paste(s, 'is not defined for dataset {{f}}'))
+    }
+  }))
+
+```
+
+
+```{r results='asis'}
+show_dims(ff$dataset)
+```
+
+# {{f}}: Variables
+
+```{r variables-{{f}}, echo=F, warning=F, message=F, results='asis'}
+
+variables_to_display = as.list(colnames(ff$dataset))
+
+invisible(lapply(variables_to_display, function(v) {
+  matches_to_config <- stringr::str_detect(v, names(ff[['Variable Settings']]))
+  functions = sapply(ff[['Variable Settings']][matches_to_config], get)
+  args1 = c(list(ff$dataset, v), functions)
+  do.call(describe_var, args1)
+}))
+
+invisible()
+
+```
+
+
+
+
+
