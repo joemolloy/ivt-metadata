@@ -18,7 +18,7 @@
         \noindent
         \begin{singlespace}
     	\begin{tabular*}{\textwidth}{@{}l@{}}
-    	\includegraphics[width=\textwidth]{ivt-style/logos/strc-logo-\the\year}
+    	\includegraphics[width=\textwidth]{logos/strc-logo-\the\year}
         \end{tabular*}
         \end{singlespace}
     }
@@ -328,8 +328,8 @@
 \providecommand{\titlefigureboxheight}{9cm}
 \providecommand{\mylogos}{
 \begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
-\includegraphics[width=2.5in]{latex/ETH-IVT_modified/ivt-style/logos/ivt-logo-crop}
-& \includegraphics[height=0.668in]{latex/ETH-IVT_modified/ivt-style/logos/eth-logo-new} \\
+\includegraphics[width=2.5in]{latex/ivt-style/logos/ivt-logo-crop}
+& \includegraphics[height=0.668in]{latex/ivt-style/logos/eth-logo-new} \\
 \end{tabular*}
 }
 

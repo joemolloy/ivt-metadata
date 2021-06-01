@@ -9,13 +9,16 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 Imports:
-  rmarkdown
-  dplyr
-  stringr
-  tidyr
-  knitr
-  pandr
-  Hmisc
+    rmarkdown,
+    dplyr,
+    stringr,
+    tidyr,
+    knitr,
+    pander,
+    Hmisc,
+    broom,
+    magrittr
+Requires:
   haven
-  broom
 LazyData: true
+RoxygenNote: 7.1.1

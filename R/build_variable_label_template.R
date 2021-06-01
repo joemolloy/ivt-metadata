@@ -24,8 +24,9 @@ build_variable_label_template <- function(...,
 
   variable_labels = setNames(mapply(function(x, dataset_name) {
     as.list(setNames(sapply(colnames(x), function(x1) {
-      previous_variable_labels[[dataset_name]][[x1]]}), colnames(x)))
-    }, datasets, dataset_names), dataset_names)
+      previous_variable_labels[[dataset_name]][[x1]]
+    }), colnames(x)))
+  }, datasets, dataset_names), dataset_names)
 
   #save variable list
   if (!is.null(output_file)) {

@@ -1,10 +1,12 @@
 
-```{r, echo=F, results='asis'}
+
+
+```{r load-dataset-{{f}}, echo=F, results='asis'}
 
 ff <- params$datasets[["{{f}}"]]
 
 
-load(ff$file_location)
+load(file.path(params$base_folder, ff$file_location))
 ff$dataset = get("{{f}}")
 ```
 
@@ -12,10 +14,10 @@ ff$dataset = get("{{f}}")
 
 
 ```{r file-description-{{f}}, echo=F, warning=F, message=FALSE, results='asis'}
-  sections = list('Title', 'Contents', 'Data collection', 'Unit of analysis', 'File Structure')
+  sections = list('Title', 'Contents', 'Data collection', 'Unit of analysis', 'File structure')
   invisible(lapply(sections, function(s) {
     if (!is.null(ff[[s]])) {
-      cat(paste0(s, ': ', ff[[s]], '\n\n' ))
+      cat(paste0('**', s, ':** ', ff[[s]], '\n\n' ))
     } else {
       warning(paste(s, 'is not defined for dataset {{f}}'))
     }
@@ -23,22 +25,27 @@ ff$dataset = get("{{f}}")
 
 ```
 
+**File location:** `r ff$file_location`
 
-```{r results='asis'}
-show_dims(ff$dataset)
+```{r results='asis', echo=F, warning=F, message=F}
+ivtmetadata::show_dims(ff$dataset)
 ```
 
 # {{f}}: Variables
 
-```{r variables-{{f}}, echo=F, warning=F, message=F, results='asis'}
+```{r variables-{{f}}, echo=F, warning=F, message=F, error=F, results='asis'}
 
 variables_to_display = as.list(colnames(ff$dataset))
 
 invisible(lapply(variables_to_display, function(v) {
-  matches_to_config <- stringr::str_detect(v, names(ff[['Variable Settings']]))
-  functions = sapply(ff[['Variable Settings']][matches_to_config], get)
+  functions <- if(!is.null(names(ff[['Variable Settings']]))) {
+    matches_to_config <- stringr::str_detect(v, names(ff[['Variable Settings']]))
+    lapply(as.list(unlist(ff[['Variable Settings']][matches_to_config])), get)
+  } else {
+    list()
+  }
   args1 = c(list(ff$dataset, v), functions)
-  do.call(describe_var, args1)
+  do.call(ivtmetadata::describe_var, args1)
 }))
 
 invisible()

@@ -19,12 +19,20 @@ label_and_save_dataset <- function(df_base, data_labels,
 
   #all add the value labels to the dataframe
   df <- df_base %>%
-    mutate(across(where(is.character), function(c) {
+    mutate(across(where(~ is.character(.x) | is.numeric(.x)), function(c) {
       lbs = unlist(value_labels[[filename]][[cur_column()]])
       inverted_labels = names(lbs)
-      names(inverted_labels) = lbs
 
-      haven::labelled(c,labels=inverted_labels)
+      if (length(lbs) > 0) {
+        if (typeof(c) %in% c('double', 'integer')) {
+          inverted_labels <- as.numeric(inverted_labels)
+        }
+        names(inverted_labels) = lbs
+
+        haven::labelled(c,labels=inverted_labels)
+      } else {
+        c
+      }
     }))
 
   lapply(colnames(df), function(d) {

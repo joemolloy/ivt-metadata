@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-build_value_label_template <- function(..., exclude_regexes, output_file) {
+build_value_label_template <- function(..., exclude_regexes, previous_value_labels, output_file) {
   datasets = list(...)
 
   dataset_var_names <- sapply(as.list(substitute(list(...)))[-1L], deparse)
@@ -17,6 +17,17 @@ build_value_label_template <- function(..., exclude_regexes, output_file) {
 
   value_structure = lapply(datasets, build_value_list, exclude_regexes)
   names(value_structure) = dataset_names
+
+  if (!missing(previous_value_labels)) {
+    lapply(names(previous_value_labels), function(d) {
+      lapply(names(previous_value_labels[[d]]), function(v) {
+        lapply(names(previous_value_labels[[d]][[v]]), function(val) {
+          value_structure[[d]][[v]][[val]] <<- previous_value_labels[[d]][[v]][[val]]
+        })
+      })
+    })
+  }
+
 
   #lapply(datasets, build_list_element)
   #dataset_names
@@ -31,7 +42,7 @@ build_value_list <- function(df, exclude_regexes) {
   var_names = colnames(var_cols)
 
   if (!missing(exclude_regexes)) {
-    exclude_matches <- sapply(exclude_regexes, function(x) str_starts(var_names, x))
+    exclude_matches <- sapply(exclude_regexes, function(x) stringr:: str_starts(var_names, x))
     exclude_matches_logical <- ifelse(dim(exclude_matches) == 2, rowSums(exclude_matches), exclude_matches) > 0
     excluded_cols = var_names[exclude_matches_logical]
   } else {
@@ -56,7 +67,7 @@ build_value_list <- function(df, exclude_regexes) {
 
 should_label_var <- function(v, df_col, exclude_regexes) {
   unique_vals <- na.omit(unique(df_col))
-  if (any(str_starts(v, exclude_regexes))) return (F)
+  if (any(stringr:: str_starts(v, exclude_regexes))) return (F)
   if (setequal(stringr::str_to_lower(unique_vals), c('yes','no'))) return (F)
   if (setequal(stringr::str_to_lower(unique_vals), c('true','false'))) return (F)
   if (is.logical(v)) return (F)

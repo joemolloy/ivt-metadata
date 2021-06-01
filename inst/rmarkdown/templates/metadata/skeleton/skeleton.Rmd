@@ -2,9 +2,6 @@
 title: Title metadata
 author:  author
 date: "`r Sys.Date()`"
-
-
-always_allow_html: yes
 output:
   html_document:
     number_sections: yes
@@ -13,14 +10,15 @@ output:
     toc: yes
     toc_depth: 3
     fig_crop: no
-    template: "latex/ETH-IVT_modified/Template.tex"
+    template: "latex/Template.tex"
 vignette: |
   %\VignetteIndexEntry{Codebook} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 params:
+  base_folder: /data/mobis/MOBIS_Covid ### the base folder where all the .rda files are then sourced from  ####
   datasets:
     value:
       participants:
-        file_location: /data/mobis/MOBIS_Covid/tracking/participants.rda
+        file_location: tracking/participants.rda
         Title: x
         Contents: >
           This is the description of the file.
@@ -35,7 +33,7 @@ params:
           hh_yearlydist_car: [data_type, nice_summary, show_histogram]
           day_*: [data_type]
       legs:
-        file_location: /data/mobis/MOBIS_Covid/tracking/legs.rda
+        file_location: tracking/legs.rda
         Title: legs dataset
         Variable Settings:
           length: [data_type]
@@ -207,164 +205,41 @@ Individuals, trip-legs and activities
 </div>
 
 
+\input{}
 
 
+# Dataset list / file overview
+
+```{r file-list, echo=FALSE, results='asis', message=FALSE, cache=FALSE}
+invisible(lapply(names(params$datasets), function(ff) {
+  cat(paste0('## ', ff))
+  cat('\n')
+  cat(paste0('* **Title: **', params$datasets[[ff]][['Title']]))
+  cat('\n')
+  cat(paste0('* **Filename: **', params$datasets[[ff]][['file_location']]))
+  cat('\n')
+  cat(paste0('* **Section link: ** [', ff, ': File description]'))
+  cat('\n')
+  cat('\n')
+}))
+
+```
+
+<div style="page-break-after: always; visibility: hidden">
+  \clearpage
+</div>
 
 <!-- Ignore everything below here -->
 
-```{r libs, echo=FALSE, results='hide', message=FALSE, cache=FALSE}
+```{r file-documentation, echo=FALSE, message=F, warning=F, results='asis'}
 
-
-list.of.packages <- c("pander","tidyr","broom")
-
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
-lapply(list.of.packages, require, character.only = TRUE)
-
-knitr::opts_chunk$set(echo = FALSE, cache = FALSE)
-```
-
-
-```{r base, echo=FALSE, results='hide', message=F}
+library(ivtmetadata)
 
 pander::panderOptions("knitr.auto.asis", FALSE)
 pander::panderOptions("table.continues", NULL)
 pander::panderOptions("table.alignment.default", "right")
 
-show_dims <- function(x) {
-  n <- nrow(x)
-  c <- ncol(x)
-  paste("Number of cases: ", n) %>% fact
-  cat('\n')
-  paste("Variables per record: ", c) %>% fact
-}
-
-summarize_labels <- function(x, name) {
-  try({
-    labels <- attr(as.factor(x), "labels")
-    
-    formatted_labels <- mapply(function(name, value) paste0(name, " = ", value), labels, names(labels))
-    paste0("Labels: ", paste(formatted_labels, collapse = ", ")) %>% fact
-  })
-}
-
-knit_print.data.frame <- function(x, options, ...) {
-  x %>% knitr::kable %>% knitr::knit_print(options, ...)
-}
-
-varname <- function(x, name) {
-  label_x <- Hmisc::label(x)
-  cat(pander::pandoc.header(paste0("`", name, "`"), 2))
-  cat('\n')
-  if (!is.na(label_x)) cat(label_x)
-  cat('\n\n')
-}
-
-fact <- function(x) {
-  paste0(x, ". ", '\n', collapse = '\n') %>% cat()
-}
-
-data_type <- function(x, name) {
-  format <- stringr::str_to_title(setdiff(unique(c(class(x), mode(x))), c('labelled', 'haven_labelled', 'vctrs_vctr' )))[1]
-  paste0("Format = ", paste(format, collapse = ", ")) %>% fact
-}
-
-nice_summary <- function(x, name) x %>% summary %>% pander::pander_return()
-
-count_levels_horizontal <- function(x, name) {
-  m <- x %>% haven::as_factor %>% 
-    summary(maxsum = 26)  %>% 
-    broom::tidy() %>% 
-    tidyr::pivot_wider(names_from = names, values_from=x)
-  
-  rownames(m)<-"Count"
-#   vals <-
-#     colnames(m) %>%
-#     lapply(function(name) unname(l[names(l) == name])) %>%
-#     lapply(paste, collapse = ", ") %>%
-#     unlist %>%
-#     as.matrix %>%
-#     t
-  
-#  rbind(vals, m) %>% "rownames<-"(c("Values", "Count")) %>% pander::pander()
-  m %>% pander::pander()
-}
-
-count_levels_vertical <- function(x, name) {
-  m <- x %>% as.factor %>% summary(maxsum = 26) %>% broom::tidy()
-  colnames(m) <- c('Value', 'Count')
-#   vals <-
-#     colnames(m) %>%
-#     lapply(function(name) unname(l[names(l) == name])) %>%
-#     lapply(paste, collapse = ", ") %>%
-#     unlist %>%
-#     as.matrix %>%
-#     t
-  
-#  rbind(vals, m) %>% "rownames<-"(c("Values", "Count")) %>% pander::pander()
-  m %>% pander::pander()
-}
-
-show_histogram <- function(x, name) {
-  cat('\n\n')
-  hist(x, main = paste("Histogram of", name), xlab = name, probability = TRUE)
-  cat('\n\n')
-}
-
-detect_standard_functions <- function(c) {
-  col_type = typeof(c)
-  is_date_or_time <- length(intersect(c('Date', 'POSIXct', 'POSIXt'), class(c))) > 0
-  funs <- c(data_type)
-  
-  funs <- if (col_type == 'character' && length(unique(c)) <= 5) {
-    funs <- c(funs) 
-  } else if  (col_type == 'character' && length(unique(c)) > 5 && length(unique(c)) < 26) {
-    funs <- c(funs) 
- # } else if ('integer' == typeof(c)) { # integer
- #   funs <- c(funs)
-  }  else if (!is_date_or_time && (col_type == 'numeric' || col_type == 'double')) {
-    funs <- c(funs, show_histogram)
-  }# else {
-  #  funs <- c(funs, function(x, name){paste(col_type )})
-  #}
-  
-  if (!is.null(attr(c, 'labels')) && 
-      length(attr(c, 'labels') > 0)) {
-    funs <- c(summarize_labels, funs)
-  }
-  
-  as.list(funs)
-}
-
-describe_var <- function(data, name, ...) {
-  column <- data[[name]]
-  
-  funs <- if (length(list(...)) == 0) {
-    detect_standard_functions(column)
-  } else {
-    list(...)
-  }
-
-  output <- function(f, x, name) {f(x, name)}
-  
-  cat(ifelse(knitr::is_latex_output(), "\n\\minipage{\\textwidth}\n", ''))
-  cat(output(varname, column, name))
-  cat(unlist(lapply(funs, output, x = column, name = name)), sep=' \n')
-  cat('\n\n')
-  cat(ifelse(knitr::is_latex_output(), "\\endminipage\n", ''))
-  
-}
-```
-
-```{r, echo=FALSE, message=F, warning=F, results='asis'}
-
-files <- names(params$datasets) 
-
-```
-
-```{r, echo=FALSE, message=F, warning=F, results='asis'}
-
-src <- lapply(files, function(f) {
+src <- lapply(names(params$datasets), function(f) {
   ## first build file info text:
   file_description = knitr::knit_expand('archive_dataset_section_template.Rmd')
   ## then create describe_var for all variables 
@@ -378,4 +253,5 @@ res = knitr::knit_child(text = unlist(src), quiet=T, options = list(params=param
 cat(res, sep = '\n')
 
 ```
+
 
