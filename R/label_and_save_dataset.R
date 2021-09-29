@@ -19,27 +19,24 @@ label_and_save_dataset <- function(df_base, data_labels,
 
   #all add the value labels to the dataframe
   df <- df_base %>%
-    mutate(across(where(~ is.character(.x) | is.numeric(.x)), function(c) {
+    mutate(across(everything(), function(c) {
       lbs = unlist(value_labels[[filename]][[cur_column()]])
       inverted_labels = names(lbs)
+      variable_label <- data_labels[[filename]][[cur_column()]]
 
       if (length(lbs) > 0) {
         if (typeof(c) %in% c('double', 'integer')) {
           inverted_labels <- as.numeric(inverted_labels)
         }
-        names(inverted_labels) = lbs
-
-        haven::labelled(c,labels=inverted_labels)
+        names(inverted_labels) = str_sub(lbs, end=5)
+        haven::labelled(c,label=variable_label, labels=inverted_labels)
+        #labelled::val_labels(c) <- inverted_labels
       } else {
+        #sjlabelled::set_label(c, label=inverted_labels)
+        labelled::var_label(c) <- variable_label
         c
       }
     }))
-
-  lapply(colnames(df), function(d) {
-    if (!is.null(data_labels[[filename]][[d]])) {
-      Hmisc:::label(df[[d]]) <<- data_labels[[filename]][[d]]
-    }
-  })
 
   df_labels <- unlist(data_labels[[filename]])
 
@@ -64,8 +61,10 @@ label_and_save_dataset <- function(df_base, data_labels,
     if (spss_output) {
       haven::write_sav(
         janitor::clean_names(df),
-        path=file.path(output_location, paste0(filename, '.sav'))
+        path=file.path(output_location, paste0(filename, '.sav')),
+        compress = T
       )
+      
     }
   }
   return (df)
