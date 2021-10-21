@@ -1,7 +1,3 @@
-#' @importFrom stats na.omit setNames
-#' @importFrom graphics hist
-#' @importFrom dplyr across cur_column where mutate
-
 #' Print dimensions of a dataset
 #'
 #' @param x Dataframe
@@ -139,7 +135,7 @@ count_levels_vertical <- function(x, name) {
 #' @examples
 show_histogram <- function(x, name) {
   cat('\n\n')
-  hist(x, main = paste("Histogram of", name), xlab = name, probability = TRUE)
+  hist(haven::zap_labels(x), main = paste("Histogram of", name), xlab = name, probability = TRUE)
   cat('\n\n')
 }
 

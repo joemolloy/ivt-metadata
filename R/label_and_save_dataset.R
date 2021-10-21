@@ -19,8 +19,8 @@ label_and_save_dataset <- function(df_base, data_labels,
 
   #all add the value labels to the dataframe
   df <- df_base %>%
-    mutate(across(everything(), function(c) {
-      lbs = unlist(value_labels[[filename]][[cur_column()]])
+    mutate(dplyr::across(everything(), function(c) {
+      lbs = unlist(value_labels[[filename]][[dplyr::cur_column()]])
       inverted_labels = names(lbs)
       variable_label <- data_labels[[filename]][[cur_column()]]
 
@@ -64,7 +64,7 @@ label_and_save_dataset <- function(df_base, data_labels,
         path=file.path(output_location, paste0(filename, '.sav')),
         compress = T
       )
-      
+
     }
   }
   return (df)
